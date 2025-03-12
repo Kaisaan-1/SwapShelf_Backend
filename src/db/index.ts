@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 // Connect to your database
-mongoose.connect(process.env["SWAPSHELF_DATABASE_URL"]);
+mongoose.connect(process.env["SWAP_SHELF_DATABASE_URL"]!);
 
 // Define a schema model
 const Example = mongoose.model("Example", new mongoose.Schema({ name: String }));
