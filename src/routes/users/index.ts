@@ -1,19 +1,33 @@
 import bcrypt from "bcryptjs";
+import otpModel from "../../db/otpSchema";
 import userModel from "../../db/userSchema";
+import sendVerificationOTP from "../../controllers";
 import { Router, Request, Response } from "express";
 
-const router = Router()
+const router = Router();
+
+router.get('/', async (req: Request, res: Response) => {
+    try {
+        const users = await userModel.find();
+        res.status(200).json({users: users})
+    } catch (error) {
+        res.status(500).json({error: error})
+    }
+})
 
 // @ts-ignore
 router.post('/signUp', async (req: Request, res: Response) => {
-    let { userName, email, password } = req.body;
     try {
-        password = await bcrypt.hash(password, 10);
+        let { userName, email, password } = req.body;
 
         // Validate required fields
         if (!userName || !email || !password) {
             return res.status(400).json({ message: "Username, email, and password are required" });
         }
+
+        password = await bcrypt.hash(password, 10);
+
+        const createdOTP = await sendVerificationOTP({email})
 
         const newUser = new userModel({
             userName,
@@ -25,20 +39,48 @@ router.post('/signUp', async (req: Request, res: Response) => {
 
         res.status(201).json({
             message: "User registered successfully",
-            data: newUser
+            otp: createdOTP,
+            data: newUser,
         });
 
     } catch (error) {
         console.error("Error registering user:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: "Internal server error: "  +  error });
+    }
+});
+
+router.post('/verifyOTP', async (req: Request,res: Response) => {
+    try {
+        const { userOtp, email } = req.body;
+
+        if (!userOtp ||!userOtp){
+            res.status(404).json({ message: "userOtp and email is required"});
+            return;
+        }
+        const storedOtp = await otpModel.findOne({ email })
+
+        if (!storedOtp){
+            res.status(404).json({message: "User not found"});
+            return;
+        }
+
+        const matched = await bcrypt.compare(userOtp, storedOtp.otp!)
+
+        if (matched){
+            res.status(200).json({ message: "User Authorized"});
+        } else {
+            res.status(401).json({ message: "Unauthorized"})
+        }
+    } catch (error) {
+        res.status(500).json({ message: `Unhandled Exception: ${error}`})
     }
 });
 
 router.post('/login', async (req: Request, res: Response) => {
     try {
-        let { email, usrPassword } = req.body;
+        let { email, password } = req.body;
 
-        if (!email || !usrPassword) {
+        if (!email || !password) {
             res.status(400).json({
                 "message": "Email and password is required"
             });
@@ -50,11 +92,11 @@ router.post('/login', async (req: Request, res: Response) => {
         if (!userDoc) {
             res.status(404).json({
                 "message": "User not found"
-            })
+            });
             return;
         }
 
-        const matched = await bcrypt.compare(usrPassword, userDoc.password);
+        const matched = await bcrypt.compare(password, userDoc.password);
 
         if (!matched) {
             res.status(401).json({
@@ -63,10 +105,13 @@ router.post('/login', async (req: Request, res: Response) => {
             return;
         };
 
+        res.status(200).json({msg: "Logged In"})
+
     } catch (error) {
         res.status(500).json({
             msg: "something went wrong"
         });
     };
-})
+});
+
 export default router;
