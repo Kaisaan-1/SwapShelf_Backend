@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
     contactNumber:{
         type: String,
     },
+    studentNumber:{
+        type: String,
+        required: true,
+    }
 });
 
 const userModel = mongoose.model("User", userSchema);

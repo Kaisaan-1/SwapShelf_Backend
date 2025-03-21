@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import jwt from 'jsonwebtoken';
 import otpModel from "../../db/otpSchema";
 import userModel from "../../db/userSchema";
 import sendVerificationOTP from "../../controllers";
@@ -67,7 +68,19 @@ router.post('/verifyOTP', async (req: Request,res: Response) => {
         const matched = await bcrypt.compare(userOtp, storedOtp.otp!)
 
         if (matched){
-            res.status(200).json({ message: "User Authorized"});
+            const userDoc = await userModel.findOne({ email });
+            if (!userDoc) {
+                res.status(404).json({
+                    "message": "User not found"
+                });
+                return;
+            }
+            const token = jwt.sign(
+                { userId: userDoc._id },
+                process.env["JWT_SECRET"]!,
+                { expiresIn: '1h' }
+            )
+            res.status(200).json({ token });
         } else {
             res.status(401).json({ message: "Unauthorized"})
         }

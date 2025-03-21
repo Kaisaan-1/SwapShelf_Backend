@@ -11,8 +11,6 @@ let transporter = nodemailer.createTransport({
     // host: "smtp.office365.com",
     service: 'gmail',
     secure: false,
-    logger: true,
-    debug: true,
     auth: {
         user: process.env["AUTH_EMAIL"],
         pass: process.env["AUTH_PSWD"]
