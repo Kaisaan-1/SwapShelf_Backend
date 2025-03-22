@@ -6,14 +6,14 @@ declare global {
     namespace Express {
         export interface Request {
             bkData: {
-                file: string;
                 desc: string;
+                file?: string;
                 genre: string;
                 title: string;
                 author: string;
-                coverArt: string;
-                hardOrSoft: boolean;
-                userId: string | JwtPayload;
+                coverArt?: string;
+                softCopy: boolean;
+                userId?: string | JwtPayload;
             }
         }
     }

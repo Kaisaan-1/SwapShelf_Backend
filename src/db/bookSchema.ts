@@ -14,26 +14,27 @@ const bookSchema = new mongoose.Schema({
         required: true,
     },
     genre: {
-        type: String,
+        type: [String],
         required: true,
     },
-    hardOrSoft: {
+    softCopy: {
         type: Boolean,
-        required: true,
+        // required: true,
     },
     coverArt: {
         type: String,
-        required: true,
+        // required: true,
     },
     userId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true,
     },
     file: {
         type: String,
-        required: true,
+        // required: true
     }
 });
 
-const bookModel = new mongoose.Model('Books', bookSchema);
+const bookModel = mongoose.model("Books", bookSchema);
 export default bookModel;

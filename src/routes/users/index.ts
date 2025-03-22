@@ -10,9 +10,9 @@ const router = Router();
 router.get('/', async (req: Request, res: Response) => {
     try {
         const users = await userModel.find();
-        res.status(200).json({users: users})
+        res.status(200).json({ users: users })
     } catch (error) {
-        res.status(500).json({error: error})
+        res.status(500).json({ error: error })
     }
 })
 
@@ -28,7 +28,7 @@ router.post('/signUp', async (req: Request, res: Response) => {
 
         password = await bcrypt.hash(password, 10);
 
-        const createdOTP = await sendVerificationOTP({email})
+        const createdOTP = await sendVerificationOTP({ email })
 
         const newUser = new userModel({
             userName,
@@ -46,28 +46,28 @@ router.post('/signUp', async (req: Request, res: Response) => {
 
     } catch (error) {
         console.error("Error registering user:", error);
-        res.status(500).json({ message: "Internal server error: "  +  error });
+        res.status(500).json({ message: "Internal server error: " + error });
     }
 });
 
-router.post('/verifyOTP', async (req: Request,res: Response) => {
+router.post('/verifyOTP', async (req: Request, res: Response) => {
     try {
         const { userOtp, email } = req.body;
 
-        if (!userOtp ||!userOtp){
-            res.status(404).json({ message: "userOtp and email is required"});
+        if (!userOtp || !userOtp) {
+            res.status(404).json({ message: "userOtp and email is required" });
             return;
         }
         const storedOtp = await otpModel.findOne({ email })
 
-        if (!storedOtp){
-            res.status(404).json({message: "User not found"});
+        if (!storedOtp) {
+            res.status(404).json({ message: "User not found" });
             return;
         }
 
         const matched = await bcrypt.compare(userOtp, storedOtp.otp!)
 
-        if (matched){
+        if (matched) {
             const userDoc = await userModel.findOne({ email });
             if (!userDoc) {
                 res.status(404).json({
@@ -82,10 +82,10 @@ router.post('/verifyOTP', async (req: Request,res: Response) => {
             )
             res.status(200).json({ token });
         } else {
-            res.status(401).json({ message: "Unauthorized"})
+            res.status(401).json({ message: "Unauthorized" })
         }
     } catch (error) {
-        res.status(500).json({ message: `Unhandled Exception: ${error}`})
+        res.status(500).json({ message: `Unhandled Exception: ${error}` })
     }
 });
 
@@ -118,7 +118,13 @@ router.post('/login', async (req: Request, res: Response) => {
             return;
         };
 
-        res.status(200).json({msg: "Logged In"})
+        const token = jwt.sign(
+            { userId: userDoc._id },
+            process.env["JWT_SECRET"]!,
+            { expiresIn: '1h' }
+        )
+
+        res.status(200).json({ msg: "Logged In", token: token })
 
     } catch (error) {
         res.status(500).json({

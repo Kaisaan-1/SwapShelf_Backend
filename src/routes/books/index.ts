@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { uploadBook } from './bookControllers';
+import { getAllBooks, uploadBook } from './bookControllers';
 import { bookValidator } from '../../middlewares/bookValidation';
 import { authenticateToken } from '../../middlewares/authValidator';
 
 const router = Router();
 
-// @ts-ignore
-router.post('/upload', authenticateToken(), bookValidator(), uploadBook)
+router.get('/', authenticateToken(), getAllBooks);
+
+router.post('/upload', bookValidator(), authenticateToken(), uploadBook);
 
 export default router;
