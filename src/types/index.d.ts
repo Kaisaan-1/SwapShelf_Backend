@@ -1,3 +1,5 @@
+import { JwtPayload } from "jsonwebtoken";
+
 export {}
 
 declare global {
@@ -11,6 +13,7 @@ declare global {
                 author: string;
                 coverArt: string;
                 hardOrSoft: boolean;
+                userId: string | JwtPayload;
             }
         }
     }
