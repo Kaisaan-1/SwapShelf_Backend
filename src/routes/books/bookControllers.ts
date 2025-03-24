@@ -21,8 +21,6 @@ export async function uploadBook(req: Request, res: Response) {
 
         const result = await cloudinary.uploader.upload(req.file.path);
 
-        console.log('Result: ', result)
-
         if (!result) {
             res.status(500).json({ status: 'Result variable is empty'})
             return;

@@ -160,7 +160,6 @@ export async function alterUsrDetails(req: Request, res: Response) {
         if (contactNumber !== null && contactNumber !== undefined) updateData.contactNumber = contactNumber;
         if (professionalTitle !== null && professionalTitle !== undefined) updateData.professionalTitle = professionalTitle;
 
-        console.log("Passed null check data")
         // Check if there's anything to update
         if (Object.keys(updateData).length === 0) {
             res.status(400).json({ msg: "No valid fields provided for update" });
@@ -168,7 +167,6 @@ export async function alterUsrDetails(req: Request, res: Response) {
         }
 
         // Update the document (assuming `req.userId` contains the user's ID)
-        console.log("Got to update User")
         const updatedUser = await userModel.findByIdAndUpdate(
             req.userId,
             updateData,

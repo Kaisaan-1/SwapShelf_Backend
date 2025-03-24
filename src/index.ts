@@ -16,7 +16,7 @@ async function connectToDB(){
         await mongoose.connect(process.env["SWAP_SHELF_DB"]!, {});
         console.log("Connection to DB successful");
     } catch (error) {
-        console.log("Connection to DB error: ", error);
+        console.error("Connection to DB error: ", error);
         process.exit(1)
     }
 }
