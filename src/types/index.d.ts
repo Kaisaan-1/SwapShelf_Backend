@@ -15,6 +15,17 @@ declare global {
                 userId?: string | JwtPayload;
             },
             userId: string;
+            altUsrDetails: {
+                age?: number;
+                country?: string;
+                userName?: string;
+                languages?: string;
+                profilePic?: string;
+                description?: string;
+                studentNumber?: string;
+                contactNumber?: string;
+                professionalTitle?: string;
+            }
         }
     }
 }

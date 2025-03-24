@@ -4,6 +4,7 @@ import otpModel from "../../db/otpSchema";
 import { Request, Response } from 'express';
 import userModel from '../../db/userSchema';
 import sendVerificationOTP from '../../controllers';
+import cloudinary from '../../utils/cloudinary';
 
 export async function getAllUsers(req: Request, res: Response) {
     try {
@@ -132,6 +133,58 @@ export async function login(req: Request, res: Response) {
 }
 
 export async function alterUsrDetails(req: Request, res: Response) {
+    try {
+        const { age, country, userName, languages, profilePic, description,
+            studentNumber, contactNumber, professionalTitle
+        } = req.altUsrDetails;
+
+        // Create an update object, excluding null/undefined fields
+        const updateData: Record<string, any> = {};
+
+        if (req.file) {
+            try {
+                const picture = await cloudinary.uploader.upload(req.file.path)
+                updateData.profilePic = picture.url;
+            } catch (error) {
+                res.status(500).json({ msg: "Failed to upload image" });
+            }
+        }
+
+        if (age !== null && age !== undefined) updateData.age = age;
+        if (country !== null && country !== undefined) updateData.country = country;
+        if (userName !== null && userName !== undefined) updateData.userName = userName;
+        if (languages !== null && languages !== undefined) updateData.languages = languages;
+        if (description !== null && description !== undefined) updateData.description = description;
+        if (profilePic !== null && profilePic !== undefined) updateData.profilePic = updateData.profilePic;
+        if (studentNumber !== null && studentNumber !== undefined) updateData.studentNumber = studentNumber;
+        if (contactNumber !== null && contactNumber !== undefined) updateData.contactNumber = contactNumber;
+        if (professionalTitle !== null && professionalTitle !== undefined) updateData.professionalTitle = professionalTitle;
+
+        console.log("Passed null check data")
+        // Check if there's anything to update
+        if (Object.keys(updateData).length === 0) {
+            res.status(400).json({ msg: "No valid fields provided for update" });
+            return;
+        }
+
+        // Update the document (assuming `req.userId` contains the user's ID)
+        console.log("Got to update User")
+        const updatedUser = await userModel.findByIdAndUpdate(
+            req.userId,
+            updateData,
+            { new: true } // Return the updated document
+        );
+
+
+        if (!updatedUser) {
+            res.status(404).json({ msg: "User not found" });
+            return;
+        }
+
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        res.status(500).json({ err: JSON.stringify(error) })
+    }
 }
 
 export async function getUsrDetails(req: Request, res: Response) {
@@ -141,7 +194,7 @@ export async function getUsrDetails(req: Request, res: Response) {
         const user = await userModel.findById(userId)
 
         if (!user) {
-            res.status(404).json({ msg: 'User not found'});
+            res.status(404).json({ msg: 'User not found' });
             return;
         }
 

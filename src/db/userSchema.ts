@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema({
     },
     age:{
         type: Number,
+        default: 18,
     },
     description:{
         type: String,
@@ -32,7 +33,15 @@ const userSchema = new mongoose.Schema({
     studentNumber:{
         type: String,
         required: true,
-    }
+    },
+    country: {
+        type: String,
+        default: 'Ghana',
+    },
+    languages: {
+        type: [String],
+        default: 'English',
+    },
 });
 
 const userModel = mongoose.model("User", userSchema);
