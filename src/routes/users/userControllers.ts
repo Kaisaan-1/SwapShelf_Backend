@@ -137,7 +137,16 @@ export async function alterUsrDetails(req: Request, res: Response) {
 export async function getUsrDetails(req: Request, res: Response) {
     try {
         const userId = req.userId;
+
+        const user = await userModel.findById(userId)
+
+        if (!user) {
+            res.status(404).json({ msg: 'User not found'});
+            return;
+        }
+
+        res.status(200).json({ usr: user })
     } catch (error) {
-        
+        res.status(500).json({ err: error })
     }
 }
