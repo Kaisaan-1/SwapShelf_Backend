@@ -130,3 +130,11 @@ export async function login(req: Request, res: Response) {
         });
     };
 }
+
+export async function alterUsrDetails(req: Request, res: Response) {
+
+}
+
+export async function getUsrDetails(req: Request, res: Response) {
+    
+}

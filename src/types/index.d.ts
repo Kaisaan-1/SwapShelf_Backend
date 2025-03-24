@@ -13,7 +13,8 @@ declare global {
                 author: string;
                 softCopy: boolean;
                 userId?: string | JwtPayload;
-            }
+            },
+            userId: string;
         }
     }
 }

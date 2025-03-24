@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from 'express';
 
-export function authenticateToken() {
+export function authenticateToken(profile?: boolean) {
     return (req: Request, res: Response, next: NextFunction) => {
         const authHeader = req.headers.authorization;
         const token = authHeader && authHeader.split(' ')[1];
@@ -18,7 +18,11 @@ export function authenticateToken() {
                 if (!payload) return res.status(500).json({ msg: 'Something went wrong' });
 
                 if (typeof payload === 'object' && payload !== null && 'userId' in payload) {
-                    req.bkData.userId = payload.userId;
+                    if (!profile) {
+                        req.bkData.userId = payload.userId;
+                    } else {
+                        req.userId = payload.userId;
+                    }
                 }
 
                 next();

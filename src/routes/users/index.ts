@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { getAllUsers, login, signUp, verifyOTP } from "./userControllers";
+import { alterUsrDetails, getAllUsers, getUsrDetails,
+    login, signUp, verifyOTP
+} from "./userControllers";
+import { authenticateToken } from "../../middlewares/authValidator";
 
 const router = Router();
 
@@ -10,5 +13,9 @@ router.post('/signUp', signUp);
 router.post('/verifyOTP', verifyOTP);
 
 router.post('/login', login);
+
+router.get('/profile', authenticateToken(true), getUsrDetails)
+
+router.patch('/profile', authenticateToken(true), alterUsrDetails)
 
 export default router;
