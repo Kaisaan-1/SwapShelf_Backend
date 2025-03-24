@@ -11,7 +11,6 @@ declare global {
                 genre: string;
                 title: string;
                 author: string;
-                coverArt?: string;
                 softCopy: boolean;
                 userId?: string | JwtPayload;
             }

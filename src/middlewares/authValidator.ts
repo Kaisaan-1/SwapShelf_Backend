@@ -17,7 +17,6 @@ export function authenticateToken() {
 
                 if (!payload) return res.status(500).json({ msg: 'Something went wrong' });
 
-                console.log("Payload: ", payload)
                 if (typeof payload === 'object' && payload !== null && 'userId' in payload) {
                     req.bkData.userId = payload.userId;
                 }
